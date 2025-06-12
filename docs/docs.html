@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel Dokümantasyonu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css" rel="stylesheet">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 56px;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            position: fixed;
+            top: 56px;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 20px 0;
+            width: 280px;
+            background-color: #fff;
+            border-right: 1px solid #dee2e6;
+            overflow-y: auto;
+            overflow-x: hidden;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+        }
+        .sidebar-sticky {
+            position: relative;
+            top: 0;
+            height: calc(100vh - 56px);
+            padding-top: .5rem;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            min-height: calc(100vh - 56px);
+            max-width: calc(100% - 280px);
+            overflow-x: hidden;
+            background-color: #fff;
+        }
+        .nav-link {
+            color: #495057;
+            padding: 8px 16px;
+            border-radius: 4px;
+            margin: 2px 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #007bff;
+            background-color: #e9ecef;
+            transform: translateX(5px);
+        }
+        .nav-link.active {
+            color: #007bff;
+            background-color: #e9ecef;
+            font-weight: 500;
+        }
+        section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        h1 {
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+            color: #2c3e50;
+        }
+        h2 {
+            margin: 25px 0 15px;
+            color: #2c3e50;
+        }
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #2c3e50 !important;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 15px 20px;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .form-control {
+            border: 1px solid #dee2e6;
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            overflow-x: auto;
+        }
+        code {
+            color: #e83e8c;
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .form-label {
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .form-text {
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #dee2e6;
+            }
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 15px;
+            }
+            .sidebar-sticky {
+                height: auto;
+            }
+            section {
+                margin: 15px 0;
+                padding: 15px;
+            }
+        }
+        .edit-form {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            max-width: 400px;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .edit-form textarea {
+            height: 150px;
+            resize: vertical;
+        }
+        .edit-form .form-group {
+            margin-bottom: 15px;
+        }
+        .edit-form .btn-group {
+            margin-top: 10px;
+        }
+        .edit-form .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+        }
+        .edit-form .close-btn:hover {
+            color: #333;
+        }
+        .edit-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #007bff;
+            color: white;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .edit-button:hover {
+            background: #0056b3;
+        }
+        .CodeMirror {
+            height: 200px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+        }
+        .code-preview {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+            margin-top: 10px;
+        }
+        .code-preview pre {
+            margin: 0;
+            padding: 0;
+            background: none;
+            border: none;
+        }
+        .code-type-selector {
+            margin-bottom: 10px;
+        }
+        .code-block {
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+            background: none;
+            border: none;
+        }
+        .code-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .code-block-language {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        .code-block-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .code-block-actions button {
+            padding: 2px 8px;
+            font-size: 0.875rem;
+        }
+        .ql-editor {
+            min-height: 200px;
+            background-color: #fff;
+            border-radius: 4px;
+        }
+        .ql-toolbar {
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        .ql-container {
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 4px;
+            border-color: #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark fixed-top">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">Admin Panel Dokümantasyonu</span>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#giris">Giriş</a>
+                        </li>
+
+<li class="nav-item"><a class="nav-link" href="#dizin">Dizin Yapısı</a></li>
+<li class="nav-item"><a class="nav-link" href="#vt">Veri Tabanı Ayarları</a></li>
+<li class="nav-item"><a class="nav-link" href="#vtbaglanti">Veri Tabanı Bağlantısı Oluşturmak</a></li>
+<li class="nav-item"><a class="nav-link" href="#basemodel">Base Model Kullanımı</a></li>
+<li class="nav-item"><a class="nav-link" href="#migration">Migration Nedir ?</a></li>
+<li class="nav-item"><a class="nav-link" href="#blueprint">BluePrint İçeriği</a></li>
+<li class="nav-item"><a class="nav-link" href="#basemodelfonksiyonalr">basemodelfonksiyonlari</a></li>
+<li class="nav-item"><a class="nav-link" href="#yenivt">2. veri tabanı bağlantısı</a></li>
+<li class="nav-item"><a class="nav-link" href="#ac_users">ac_users</a></li>
+<li class="nav-item"><a class="nav-link" href="#bolmid">deneme</a></li>
+<li class="nav-item"><a class="nav-link" href="#tablolar">Tablolar</a></li></ul>
+                </div>
+            </nav>
+            <main class="main-content">
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Dokümantasyon Ekle</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="docForm">
+                                    <div class="mb-3">
+                                        <label for="scrollTarget" class="form-label">Scroll Hedefi (ID)</label>
+                                        <input type="text" class="form-control" id="scrollTarget" required>
+                                        <small class="form-text">Bu ID, hem sidebar linki hem de içerik bölümü için
+                                            kullanılacak</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="sidebarTitle" class="form-label">Sidebar Başlık</label>
+                                        <input type="text" class="form-control" id="sidebarTitle" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="topic" class="form-label">Konu Başlık</label>
+                                        <input type="text" class="form-control" id="topic" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="content" class="form-label">İçerik</label>
+                                        <div id="content"></div>
+                                    </div>
+                                    <!-- Kod Ekleme Bölümü -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Kod Ekle</label>
+                                        <div class="code-type-selector">
+                                            <select class="form-select" id="codeLanguage">
+                                                <option value="php">PHP</option>
+                                                <option value="javascript">JavaScript</option>
+                                                <option value="html">HTML</option>
+                                                <option value="css">CSS</option>
+                                                <option value="sql">SQL</option>
+                                            </select>
+                                        </div>
+                                        <textarea id="codeEditor"></textarea>
+                                        <div class="mt-2">
+                                            <button type="button" class="btn btn-secondary"
+                                                onclick="addCodeBlock()">Kodu Ekle</button>
+                                        </div>
+                                    </div>
+                                    <div id="codeBlocks" class="mb-3">
+                                        <!-- Eklenen kod blokları buraya gelecek -->
+                                    </div>
+                                    <button type="button" class="btn btn-primary"
+                                        onclick="addToDocumentation()">Dökümantasyona Ekle</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <section id="dizin">
+
+                <h1>Dizin Yapısı</h1>
+                <div class="content">
+                    <div><p>panel/</p><p>├── index.html</p><p>├── login.php</p><p>├── assets/</p><p>│&nbsp;&nbsp;├── js/</p><p>│&nbsp;&nbsp;├── fonts/</p><p>│&nbsp;&nbsp;├── css/</p><p>│&nbsp;&nbsp;└── img/</p><p>├── controllers/</p><p>├── includes/</p><p>│&nbsp;&nbsp;├── header.php</p><p>│&nbsp;&nbsp;├── footer.php</p><p>│&nbsp;&nbsp;├── sidebar.php</p><p>│&nbsp;&nbsp;└── notification.php</p><p>├── pages/</p><p>├── models/</p><p>│&nbsp;&nbsp;├── seeds/</p><p>│&nbsp;&nbsp;└── migration/</p><p>├── classes/</p><p>├── docs/</p><p>└── config/</p><p>&nbsp;&nbsp;├── config.php</p><p>&nbsp;&nbsp;└── database.php</p></div>
+                    
+                                        <!-- Eklenen kod blokları buraya gelecek -->
+                                    
+                </div>
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSection('dizin')">Bölümü Sil</button>
+                </div>
+            
+</section><section id="vt">
+
+                <h1>Veri Tabanı Ayarları</h1>
+                <div class="content">
+                    <div><p>panel/</p><p><br></p><p>└── config/</p><p>&nbsp;&nbsp;└── database.php</p><p>Database.php dosyası üzerinden vei tabanı yapılandırması yapılacaktır .</p><p>İlgili değişkenlere atamaları yaparak bağlantıyı sağlayın . </p><p>Yapı size sürekli açık bir bağlantı sağlayacaktır .</p></div>
+                    <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-language">PHP</span>
+                    <div class="code-block-actions">
+                        <button type="button" class="btn btn-sm btn-primary me-2" onclick="editCodeBlock(this)">Düzenle</button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.code-block').remove()">Sil</button>
+                    </div>
+                </div>
+                <div class="code-preview">
+                    <pre><code class="language-php hljs">
+    <span class="hljs-keyword">private</span> <span class="hljs-variable">$host</span> = <span class="hljs-string">"localhost"</span>;
+    <span class="hljs-keyword">private</span> <span class="hljs-variable">$dbname</span> = <span class="hljs-string">"panel"</span>;
+    <span class="hljs-keyword">private</span> <span class="hljs-variable">$username</span> = <span class="hljs-string">"root"</span>;
+    <span class="hljs-keyword">private</span> <span class="hljs-variable">$password</span> = <span class="hljs-string">""</span>;</code></pre>
+                </div></div>
+                </div>
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSection('vt')">Bölümü Sil</button>
+                </div>
+            
+</section><section id="vtbaglanti">
+
+                <h1>Veri Tabanı Bağlantısı Oluşturmak</h1>
+                <div class="content">
+                    <div><p>Singeleton pattern ile bellek tasarufu için çalışan vt yapısında  tek bir nesne örneği kullanılıyor. </p><p>Yeni bir nesne için  <u>new keywordu kullanılmayacaktır</u></p><p>Kodda belirtilen şekilde ataması yapılarak kullanıma hazır hale gelecektir</p></div>
+                    <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-language">PHP</span>
+                    <div class="code-block-actions">
+                        <button type="button" class="btn btn-sm btn-primary me-2" onclick="editCodeBlock(this)">Düzenle</button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.code-block').remove()">Sil</button>
+                    </div>
+                </div>
+                <div class="code-preview">
+                    <pre><code class="language-php hljs"><span class="hljs-keyword">require</span> Database.php
+<span class="hljs-variable">$db</span> =<span class="hljs-title class_">Database</span>::<span class="hljs-title function_ invoke__">getInstance</span>(); </code></pre>
+                </div></div>
+                </div>
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSection('vtbaglanti')">Bölümü Sil</button>
+                </div>
+            
+</section><section id="basemodel">
+
+                <h1>Base Model Kullanımı</h1>
+                <div class="content">
+                    <div><p>Veri tabanı tabloları için oluşturulan her bir class BaseModel den kalıtım alıcaktır . </p><p>Base model içerisinde temel</p><p>Create</p><p>Read</p><p>Update</p><p>Delete</p><p>Pagination</p><p>fonksiyonları tanımlıdır.</p><p><br></p></div>
+                    
+                                        <!-- Eklenen kod blokları buraya gelecek -->
+                                    
+                </div>
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSection('basemodel')">Bölümü Sil</button>
+                </div>
+            
+</section><section id="migration">
+
+                <h1>Migration Nedir ?</h1>
+                <div class="content">
+                    <div><p><strong>panel/models/migration/</strong></p><p>klasörü içerisinde bulunur .</p><p><br></p><p>Migration veri tabanı tablolarını kod üzerinde oluşturduğumuz alan . </p><p>Bu sayede sistem yeni bir alana aktarıldığında sqldumpa ihtiyaç duyulmadan tüm tablolar sorunsuz ve eksiksiz şekilde yeni sisteme aktarılır </p><p>Migration temel yapı tasını BluePrint classı oluşturmakta, blueprint kullanarak genel bir taslak üzerinden tablo yapımızı oluştracağız.</p><p>Bunun için  </p><p><strong>panel/models/migration/migrations.php </strong></p><p>dosyası üzerinde blueprint kodlarımızı yazacağız</p></div>
+                    
+                </div>
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSection('migration')">Bölümü Sil</button>
+                </div>
+            
+</section><section id="blueprint">
+
+                <h1>BluePrint İçeriği</h1>
+                <div class="content">
+                    <div><p>İçerisinde tablo stunları oluşturmak için kullanılacak olan fonksiyonlar mevcuttur . </p><p>Fonksiyonların tamamı basit ve kullanışlı.</p><p>Yeni Tablo oluşturmak için öncellikle</p><p><strong>migrations.php</strong> dosyası içerisine girip yeni nesne olusturacaz</p><p>Constructor metodundan dolayı nesne oluşturulurken tablo ismimiz parametre olarak gönderilecektir.</p><p>Daha sonra oluşturulan nesne üzerinden tablo stunları ayarlanacaktır. </p><p><br></p></div>
+                    <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-language">PHP</span>
+                    <div class="code-block-actions">
+                        <button type="button" class="btn btn-sm btn-primary me-2" onclick="editCodeBlock(this)">Düzenle</button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.code-block').remove()">Sil</button>
+                    </div>
+                </div>
+                <div class="code-preview">
+                    <pre><code class="language-php hljs"><span class="hljs-variable">$userBlueprint</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Blueprint</span>(<span class="hljs-string">'ac_users'</span>);
+<span class="hljs-variable">$userBlueprint</span>-&gt;<span class="hljs-title function_ invoke__">id</span>() 
+-&gt;<span class="hljs-keyword">string</span>(<span class="hljs-string">'username'</span>)
+-&gt;<span class="hljs-title function_ invoke__">unique</span>()
+-&gt;<span class="hljs-keyword">string</span>(<span class="hljs-string">'password'</span>)
+-&gt;<span class="hljs-keyword">string</span>(<span class="hljs-string">'user_token'</span>)
+-&gt;<span class="hljs-title function_ invoke__">timestamp</span>(<span class="hljs-string">'last_login'</span>)
+-&gt;<span class="hljs-title function_ invoke__">timestamps</span>();
+</code></pre>
+                </div></div>
+                </div>
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSection('blueprint')">Bölümü Sil</button>
+                </div>
+            
+</section><section id="basemodelfonksiyonalr">
+
+                <h1>base model fonksiyonlar</h1>
+                <div class="content">
+                    <div><p><br></p></div>
+                    <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-language">PHP</span>
+                    <div class="code-block-actions">
+                        <button type="button" class="btn btn-sm btn-primary me-2" onclick="editCodeBlock(this)">Düzenle</button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.code-block').remove()">Sil</button>
+                    </div>
+                </div>
+                <div class="code-preview">
+                    <pre><code class="language-php hljs"><span class="hljs-comment">// Tüm kullanıcıları getir</span>
+<span class="hljs-variable">$users</span> = <span class="hljs-variable">$userModel</span>-&gt;<span class="hljs-title function_ invoke__">all</span>();
+
+<span class="hljs-comment">// ID'ye göre kullanıcı getir</span>
+<span class="hljs-variable">$user</span> = <span class="hljs-variable">$userModel</span>-&gt;<span class="hljs-title function_ invoke__">find</span>(<span class="hljs-number">1</span>);
+
+<span class="hljs-comment">// Email'e göre kullanıcı getir</span>
+<span class="hljs-variable">$user</span> = <span class="hljs-variable">$userModel</span>-&gt;<span class="hljs-title function_ invoke__">findBy</span>(<span class="hljs-string">'email'</span>, <span class="hljs-string">'user@example.com'</span>);
+
+<span class="hljs-comment">// Yeni kullanıcı ekle</span>
+<span class="hljs-variable">$userId</span> = <span class="hljs-variable">$userModel</span>-&gt;<span class="hljs-title function_ invoke__">create</span>([
+    <span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'John Doe'</span>,
+    <span class="hljs-string">'email'</span> =&gt; <span class="hljs-string">'john@example.com'</span>
+]);
+
+<span class="hljs-comment">// Kullanıcı güncelle</span>
+<span class="hljs-variable">$userModel</span>-&gt;<span class="hljs-title function_ invoke__">update</span>(<span class="hljs-number">1</span>, [
+    <span class="hljs-string">'name'</span> =&gt; <span class="hljs-string">'Jane Doe'</span>
+]);
+
+<span class="hljs-comment">// Kullanıcı sil</span>
+<span class="hljs-variable">$userModel</span>-&gt;<span class="hljs-title function_ invoke__">delete</span>(<span class="hljs-number">1</span>);
+
+<span class="hljs-comment">// Sayfalama ile kullanıcıları getir</span>
+<span class="hljs-variable">$users</span> = <span class="hljs-variable">$userModel</span>-&gt;<span class="hljs-title function_ invoke__">paginate</span>(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>);
+
+<span class="hljs-comment">// Where koşulları ile kullanıcıları getir</span>
+<span class="hljs-variable">$activeUsers</span> = <span class="hljs-variable">$userModel</span>
+    -&gt;<span class="hljs-title function_ invoke__">where</span>(<span class="hljs-string">'status'</span>, <span class="hljs-string">'active'</span>)
+    -&gt;<span class="hljs-title function_ invoke__">orderBy</span>(<span class="hljs-string">'created_at'</span>, <span class="hljs-string">'DESC'</span>)
+    -&gt;<span class="hljs-title function_ invoke__">all</span>();</code></pre>
+                </div></div>
+                </div>
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSection('basemodelfonksiyonalr')">Bölümü Sil</button>
+                </div>
+            
+</section><section id="yenivt">
+
+                <h1>2.veri tabanı bağlantısı</h1>
+                <div class="content">
+                    <div><p>Config dosyasına eklendikten sonra ilgil ikeyi yeni oşuturuluan modele ekle</p><p><br></p></div>
+                    <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-language">PHP</span>
+                    <div class="code-block-actions">
+                        <button type="button" class="btn btn-sm btn-primary me-2" onclick="editCodeBlock(this)">Düzenle</button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.code-block').remove()">Sil</button>
+                    </div>
+                </div>
+                <div class="code-preview">
+                    <pre><code class="language-php hljs"><span class="hljs-variable">$kampanyaUsers</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">UserModel</span>(<span class="hljs-string">'kampanya'</span>);
+
+<span class="hljs-variable">$data2</span> = <span class="hljs-variable">$kampanyaUsers</span>-&gt;<span class="hljs-title function_ invoke__">all</span>();</code></pre>
+                </div></div>
+                </div>
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSection('yenivt')">Bölümü Sil</button>
+                </div>
+            
+</section><section id="ac_users">
+
+                <h1>ac_users Tablosu</h1>
+                <div class="content">
+                    <div><p>
+                            </p><p><br></p><p>
+                            </p><p><br></p><p>
+                        </p></div>
+                    <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-language">SQL</span>
+                    <div class="code-block-actions">
+                        <button type="button" class="btn btn-sm btn-primary me-2" onclick="editCodeBlock(this)">Düzenle</button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.code-block').remove()">Sil</button>
+                    </div>
+                </div>
+                <div class="code-preview">
+                    <pre><code class="language-sql">CREATE TABLE `ac_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `full_name` varchar(100) DEFAULT NULL,
+  `user_token` varchar(255) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT 1,
+  `last_login` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;</code></pre>
+                </div>
+            </div>
+                </div>
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSection('ac_users')">Bölümü Sil</button>
+                </div>
+            
+</section><section id="bolmid">
+
+                <h1>deneme</h1>
+                <div class="content">
+                    <div><p>deneme</p></div>
+                    
+                <!-- Eklenen kod blokları buraya gelecek -->
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-language">SQL</span>
+                    <div class="code-block-actions">
+                        <button type="button" class="btn btn-sm btn-primary me-2" onclick="editCodeBlock(this)">Düzenle</button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.code-block').remove()">Sil</button>
+                    </div>
+                </div>
+                <div class="code-preview">
+                    <pre><code class="language-sql hljs">MYsql code</code></pre>
+                </div>
+            </div>
+                </div>
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSection('bolmid')">Bölümü Sil</button>
+                </div>
+            
+</section><section id="tablolar">
+
+                <h1>Tablolars</h1>
+                <div class="content">
+                    <div><p><br></p></div>
+                    
+                </div>
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSection('tablolar')">Bölümü Sil</button>
+                </div>
+            
+</section></main>
+        </div>
+    </div>
+    <!-- Edit Button -->
+    <button class="edit-button" onclick="toggleEditForm()">✎</button>
+    <!-- Edit Form -->
+    <div class="edit-form" id="editForm" style="display: none;">
+        <span class="close-btn" onclick="toggleEditForm()">×</span>
+        <h4>Dokümantasyon Düzenle</h4>
+        <form id="docEditForm" onsubmit="saveDocumentation(event)">
+            <div class="form-group mb-3">
+                <label for="editSection">Bölüm:</label>
+                <select class="form-control" id="editSection" name="section" required onchange="loadSectionContent()">
+                    <!-- Seçenekler JavaScript ile doldurulacak -->
+                </select>
+            </div>
+            <div class="form-group mb-3">
+                <label for="editTitle">Başlık:</label>
+                <input type="text" class="form-control" id="editTitle" name="title" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="editContent">İçerik:</label>
+                <div id="editContentEditor"></div>
+            </div>
+            <div class="form-group mb-3">
+                <label for="editSidebarTitle">Sidebar Başlık:</label>
+                <input type="text" class="form-control" id="editSidebarTitle" name="sidebar_title" required>
+            </div>
+            <!-- Kod Blokları Bölümü -->
+            <div class="form-group mb-3">
+                <label class="form-label">Kod Blokları</label>
+                <div id="editCodeBlocks" class="mb-3">
+                    <!-- Mevcut kod blokları buraya yüklenecek -->
+                </div>
+                <div class="code-type-selector mb-2">
+                    <select class="form-select" id="editCodeLanguage">
+                        <option value="php">PHP</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="html">HTML</option>
+                        <option value="css">CSS</option>
+                        <option value="sql">SQL</option>
+                    </select>
+                </div>
+                <textarea id="editCodeEditor"></textarea>
+                <div class="mt-2">
+                    <button type="button" class="btn btn-secondary" onclick="addEditCodeBlock()">Kod Ekle</button>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+                <button type="button" class="btn btn-secondary" onclick="toggleEditForm()">İptal</button>
+            </div>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/php/php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/sql/sql.min.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script>
+        let contentQuill;
+        let editContentQuill;
+        let editCodeMirror;
+        let codeEditor;
+        // Sayfa yüklendiğinde editörleri başlat
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEditors();
+            populateSectionOptions();
+            initializeMutationObserver();
+        });
+        function initializeMutationObserver() {
+            // Kod bloklarını izlemek için MutationObserver
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList') {
+                        mutation.addedNodes.forEach((node) => {
+                            if (node.nodeType === 1) { // Element node
+                                const codeElements = node.querySelectorAll('code');
+                                codeElements.forEach(code => {
+                                    hljs.highlightElement(code);
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+            // Ana içerik ve düzenleme formundaki kod bloklarını izle
+            const mainContent = document.querySelector('.main-content');
+            const editForm = document.getElementById('editForm');
+            if (mainContent) {
+                observer.observe(mainContent, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+            if (editForm) {
+                observer.observe(editForm, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+        }
+        function initializeEditors() {
+            // Ana form için Quill editörünü başlat
+            if (contentQuill) {
+                contentQuill = null;
+            }
+            contentQuill = new Quill('#content', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote', 'code-block'],
+                        [{ 'header': 1 }, { 'header': 2 }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'script': 'sub'}, { 'script': 'super' }],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        [{ 'direction': 'rtl' }],
+                        [{ 'size': ['small', false, 'large', 'huge'] }],
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'font': [] }],
+                        [{ 'align': [] }],
+                        ['clean']
+                    ]
+                },
+                placeholder: 'İçerik giriniz...'
+            });
+            // Düzenleme formu için Quill editörünü başlat
+            if (editContentQuill) {
+                editContentQuill = null;
+            }
+            editContentQuill = new Quill('#editContentEditor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote', 'code-block'],
+                        [{ 'header': 1 }, { 'header': 2 }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'script': 'sub'}, { 'script': 'super' }],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        [{ 'direction': 'rtl' }],
+                        [{ 'size': ['small', false, 'large', 'huge'] }],
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'font': [] }],
+                        [{ 'align': [] }],
+                        ['clean']
+                    ]
+                },
+                placeholder: 'İçerik giriniz...'
+            });
+            // CodeMirror editörünü başlat
+            if (editCodeMirror) {
+                editCodeMirror.toTextArea();
+            }
+            editCodeMirror = CodeMirror.fromTextArea(document.getElementById("editCodeEditor"), {
+                mode: "php",
+                lineNumbers: true,
+                theme: "monokai",
+                height: "200px",
+                lineWrapping: true,
+                matchBrackets: true,
+                autoCloseBrackets: true,
+                indentUnit: 4,
+                tabSize: 4
+            });
+            // Ana kod editörünü başlat
+            if (codeEditor) {
+                codeEditor.toTextArea();
+            }
+            codeEditor = CodeMirror.fromTextArea(document.getElementById("codeEditor"), {
+                mode: "php",
+                lineNumbers: true,
+                theme: "monokai",
+                height: "200px",
+                lineWrapping: true,
+                matchBrackets: true,
+                autoCloseBrackets: true,
+                indentUnit: 4,
+                tabSize: 4
+            });
+        }
+        function populateSectionOptions() {
+            const select = document.getElementById("editSection");
+            const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
+            select.innerHTML = '';
+            sidebarLinks.forEach(link => {
+                const sectionId = link.getAttribute('href').substring(1);
+                const option = document.createElement('option');
+                option.value = sectionId;
+                option.textContent = link.textContent;
+                select.appendChild(option);
+            });
+            // İlk seçeneği seç ve içeriğini yükle
+            if (select.options.length > 0) {
+                select.selectedIndex = 0;
+                loadSectionContent();
+            }
+        }
+        function loadSectionContent() {
+            const sectionId = document.getElementById("editSection").value;
+            if (!sectionId) return;
+            const section = document.getElementById(sectionId);
+            if (!section) return;
+            const title = section.querySelector("h1")?.textContent || "";
+            const contentElement = section.querySelector(".content div");
+            let content = contentElement ? contentElement.innerHTML : "";
+            // İçerikten başlığı çıkar
+            const contentDiv = document.createElement('div');
+            contentDiv.innerHTML = content;
+            const existingTitle = contentDiv.querySelector('h1');
+            if (existingTitle) {
+                existingTitle.remove();
+                content = contentDiv.innerHTML;
+            }
+            const sidebarLink = document.querySelector(`a[href="#${sectionId}"]`);
+            const sidebarTitle = sidebarLink ? sidebarLink.textContent : "";
+            // Form alanlarını doldur
+            document.getElementById("editTitle").value = title;
+            editContentQuill.root.innerHTML = content;
+            document.getElementById("editSidebarTitle").value = sidebarTitle;
+            // Kod bloklarını yükle
+            const codeBlocksContainer = document.getElementById("editCodeBlocks");
+            codeBlocksContainer.innerHTML = "";
+            const existingCodeBlocks = section.querySelectorAll(".code-block");
+            existingCodeBlocks.forEach((block, index) => {
+                const lang = block.querySelector(".code-block-language")?.textContent.toLowerCase() || "plaintext";
+                const code = block.querySelector("code")?.textContent || "";
+                const wrapper = document.createElement("div");
+                wrapper.classList.add("code-block");
+                wrapper.dataset.index = index;
+                wrapper.innerHTML = `
+                    <div class="code-block-header">
+                        <span class="code-block-language">${lang.toUpperCase()}</span>
+                        <div class="code-block-actions">
+                            <button type="button" class="btn btn-sm btn-primary me-2" onclick="editCodeBlock(this)">Düzenle</button>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.code-block').remove()">Sil</button>
+                        </div>
+                    </div>
+                    <div class="code-preview">
+                        <pre><code class="language-${lang}">${escapeHtml(code)}</code></pre>
+                    </div>`;
+                codeBlocksContainer.appendChild(wrapper);
+            });
+        }
+        function addToDocumentation() {
+            const target = document.getElementById("scrollTarget").value.trim();
+            const sidebarTitle = document.getElementById("sidebarTitle").value.trim();
+            const topic = document.getElementById("topic").value.trim();
+            const content = contentQuill.root.innerHTML;
+            const codeBlocks = document.getElementById("codeBlocks").innerHTML;
+            if (!target || !sidebarTitle || !topic || !content) {
+                alert("Tüm alanlar doldurulmalıdır.");
+                return;
+            }
+            const fullContent = `
+                <h1>${topic}</h1>
+                <div class="content">
+                    <div>${content}</div>
+                    ${codeBlocks}
+                </div>
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSection('${target}')">Bölümü Sil</button>
+                </div>
+            `;
+            fetch('save_docs.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        section: target,
+                        content: fullContent,
+                        sidebar_title: sidebarTitle
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert("Hata: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("Bir hata oluştu!");
+                });
+        }
+        function saveDocumentation(event) {
+            event.preventDefault();
+            const sectionId = document.getElementById("editSection").value;
+            const title = document.getElementById("editTitle").value.trim();
+            const content = editContentQuill.root.innerHTML;
+            const sidebarTitle = document.getElementById("editSidebarTitle").value.trim();
+            const codeBlocks = document.getElementById("editCodeBlocks").innerHTML;
+            if (!sectionId || !title || !content || !sidebarTitle) {
+                alert("Lütfen tüm alanları doldurun.");
+                return;
+            }
+            // İçeriği düzenle - başlığı içerikten çıkar
+            const contentDiv = document.createElement('div');
+            contentDiv.innerHTML = content;
+            const existingTitle = contentDiv.querySelector('h1');
+            if (existingTitle) {
+                existingTitle.remove();
+            }
+            const fullContent = `
+                <h1>${title}</h1>
+                <div class="content">
+                    <div>${contentDiv.innerHTML}</div>
+                    ${codeBlocks}
+                </div>
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSection('${sectionId}')">Bölümü Sil</button>
+                </div>
+            `;
+            fetch('save_docs.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    section: sectionId,
+                    content: fullContent,
+                    sidebar_title: sidebarTitle
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert("Hata: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Bir hata oluştu!");
+            });
+        }
+        function deleteSection(sectionId) {
+            if (confirm('Bu bölümü silmek istediğinizden emin misiniz?')) {
+                fetch('save_docs.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'delete',
+                            section: sectionId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert("Hata: " + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("Bir hata oluştu!");
+                    });
+            }
+        }
+        function toggleEditForm() {
+            const form = document.getElementById("editForm");
+            if (form.style.display === "none") {
+                form.style.display = "block";
+                populateSectionOptions();
+                initializeEditors();
+                loadSectionContent();
+            } else {
+                form.style.display = "none";
+                // Form kapatıldığında editörleri temizle
+                if (editContentQuill) {
+                    editContentQuill.root.innerHTML = "";
+                }
+                if (editCodeMirror) {
+                    editCodeMirror.setValue("");
+                }
+                document.getElementById("editCodeBlocks").innerHTML = "";
+            }
+        }
+        function editCodeBlock(button) {
+            const codeBlock = button.closest('.code-block');
+            const lang = codeBlock.querySelector('.code-block-language')?.textContent.toLowerCase() || "plaintext";
+            const code = codeBlock.querySelector('code')?.textContent || "";
+            document.getElementById('editCodeLanguage').value = lang;
+            editCodeMirror.setValue(code);
+            codeBlock.style.display = 'none';
+            const addButton = document.querySelector('button[onclick="addEditCodeBlock()"]');
+            addButton.textContent = 'Güncelle';
+            addButton.onclick = function() {
+                updateCodeBlock(codeBlock);
+            };
+        }
+        function updateCodeBlock(oldBlock) {
+            const lang = document.getElementById('editCodeLanguage').value;
+            const code = editCodeMirror.getValue();
+            if (!code.trim()) return;
+            oldBlock.querySelector('.code-block-language').textContent = lang.toUpperCase();
+            oldBlock.querySelector('code').textContent = code;
+            oldBlock.querySelector('code').className = `language-${lang}`;
+            oldBlock.style.display = 'block';
+            hljs.highlightElement(oldBlock.querySelector('code'));
+            editCodeMirror.setValue('');
+            const addButton = document.querySelector('button[onclick="updateCodeBlock()"]');
+            addButton.textContent = 'Kod Ekle';
+            addButton.onclick = function() {
+                addEditCodeBlock();
+            };
+        }
+        function addEditCodeBlock() {
+            const lang = document.getElementById("editCodeLanguage").value;
+            const code = editCodeMirror.getValue();
+            if (!code.trim()) return;
+            const container = document.getElementById("editCodeBlocks");
+            const wrapper = document.createElement("div");
+            wrapper.classList.add("code-block");
+            wrapper.innerHTML = `
+                <div class="code-block-header">
+                    <span class="code-block-language">${lang.toUpperCase()}</span>
+                    <div class="code-block-actions">
+                        <button type="button" class="btn btn-sm btn-primary me-2" onclick="editCodeBlock(this)">Düzenle</button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.code-block').remove()">Sil</button>
+                    </div>
+                </div>
+                <div class="code-preview">
+                    <pre><code class="language-${lang}">${escapeHtml(code)}</code></pre>
+                </div>`;
+            container.appendChild(wrapper);
+            editCodeMirror.setValue("");
+            hljs.highlightElement(wrapper.querySelector('code'));
+        }
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            hljs.highlightAll();
+        });
+    </script>
+</body>
+</html>
