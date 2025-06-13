@@ -2,6 +2,8 @@
 /**
  * Oturum kontrolü
  */
+require_once __DIR__."/../classes/Router.php";
+$router = Router::getInstance();
 
 // Oturum açılmış mı kontrol et
 if (!$session->isLoggedIn()) {

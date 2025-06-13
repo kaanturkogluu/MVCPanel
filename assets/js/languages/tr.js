@@ -15,6 +15,10 @@ const tr = {
     "needHelp": "Yardıma mı ihtiyacınız var?",
     "liveSupport": "Canlı Destek",
     "sendEmail": "E-posta Gönder",
+    "typeMessage": "Mesajınızı yazın...",
+    "minimize": "Küçült",
+    "close": "Kapat",
+    "send": "Gönder",
 
     // Kullanıcı Menüsü
     "newUser": "Yeni Kullanıcı",

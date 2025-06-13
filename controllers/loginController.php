@@ -69,7 +69,8 @@ switch ($action) {
             }
 
             $kalanHakk = $maxDenemeHakki - $denemeSayisi;
-            $session->setFlash('error', "Hatalı kullanıcı adı veya şifre. Kalan deneme hakkınız: {($kalanHakk+1)}");
+            ++$kalanHakk ;
+            $session->setFlash('error', "Hatalı kullanıcı adı veya şifre. Kalan deneme hakkınız: {$kalanHakk}");
 
             $router->forcedRedirect($router->getBaseUrl() . 'panel/login.php');
 
