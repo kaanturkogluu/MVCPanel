@@ -74,12 +74,69 @@ function updateNotificationCount() {
 }
 
 // Sidebar Toggle
-document.getElementById('sidebarToggle').addEventListener('click', function() {
-    const sidebar = document.querySelector('.sidebar');
-    const mainContent = document.querySelector('.main-content');
-    sidebar.classList.toggle('active');
-    mainContent.classList.toggle('active');
-    document.body.classList.toggle('sidebar-active');
+const sidebarToggle = document.getElementById('sidebarToggle');
+const sidebar = document.querySelector('.sidebar');
+const mainContent = document.querySelector('.main-content');
+const body = document.body;
+
+if (sidebarToggle) {
+    sidebarToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+        mainContent.classList.toggle('active');
+        body.classList.toggle('sidebar-active');
+
+        // Mobil cihazlarda chat widget'ı varsa gizle/göster
+        const chatWidget = document.getElementById('chatWidget');
+        const chatMinimized = document.getElementById('chatMinimized');
+        
+        if (window.innerWidth <= 768) {
+            if (sidebar.classList.contains('active')) {
+                // Sidebar açıldığında chat'i gizle
+                if (chatWidget) chatWidget.classList.remove('active');
+                if (chatMinimized) chatMinimized.classList.remove('active');
+            } else {
+                // Sidebar kapandığında chat durumunu geri yükle
+                const chatState = localStorage.getItem('chatState');
+                if (chatState === 'open' && chatWidget) {
+                    chatWidget.classList.add('active');
+                } else if (chatState === 'minimized' && chatMinimized) {
+                    chatMinimized.classList.add('active');
+                }
+            }
+        }
+    });
+}
+
+// Mobil cihazlarda sidebar dışına tıklandığında sidebar'ı kapat
+document.addEventListener('click', function(e) {
+    if (window.innerWidth <= 768 && 
+        sidebar.classList.contains('active') && 
+        !sidebar.contains(e.target) && 
+        e.target !== sidebarToggle) {
+        sidebar.classList.remove('active');
+        mainContent.classList.remove('active');
+        body.classList.remove('sidebar-active');
+
+        // Chat durumunu geri yükle
+        const chatState = localStorage.getItem('chatState');
+        const chatWidget = document.getElementById('chatWidget');
+        const chatMinimized = document.getElementById('chatMinimized');
+        
+        if (chatState === 'open' && chatWidget) {
+            chatWidget.classList.add('active');
+        } else if (chatState === 'minimized' && chatMinimized) {
+            chatMinimized.classList.add('active');
+        }
+    }
+});
+
+// Ekran boyutu değiştiğinde sidebar'ı sıfırla
+window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+        sidebar.classList.remove('active');
+        mainContent.classList.remove('active');
+        body.classList.remove('sidebar-active');
+    }
 });
 
 // Submenu Toggle

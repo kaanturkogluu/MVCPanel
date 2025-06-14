@@ -62,5 +62,11 @@ const en = {
     "systemDocs": "System Documentation",
     "apiDocs": "API Documentation",
     "systemLogs": "System Logs",
-    "debugTools": "Debug Tools"
+    "debugTools": "Debug Tools",
+
+    // Chat Widget
+    "typeMessage": "Type your message...",
+    "minimize": "Minimize",
+    "close": "Close",
+    "send": "Send"
 }; 

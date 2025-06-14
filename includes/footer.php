@@ -1,4 +1,6 @@
-
+<?php 
+require_once __DIR__."/livechat.php";
+?>
   <!-- Footer -->
   <footer class="footer">
         <div class="footer-content">
@@ -27,6 +29,10 @@
 <script src="<?= $router->assets('js/languages/tr.js') ?>"></script>
 <script src="<?= $router->assets('js/languages/en.js') ?>"></script>
 <script src="<?= $router->assets('js/language.js') ?>"></script>
+
+
+
+
 </body>
 
 </html>
