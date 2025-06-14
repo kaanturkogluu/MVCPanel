@@ -9,7 +9,8 @@ $current_url = $_SERVER['REQUEST_URI'];
 $current_page = basename(parse_url($current_url, PHP_URL_PATH));
 
 // Active class kontrolü için yardımcı fonksiyon
-function isActive($url, $exact = true) {
+function isActive($url, $exact = true)
+{
     global $current_url, $current_page;
     if ($exact) {
         return $current_page === $url;
@@ -24,7 +25,8 @@ function isActive($url, $exact = true) {
             <div class="sidebar-header">
                 <h3 data-i18n="dashboard">Dashboard</h3>
             </div>
-            <a href="<?= $router->getPanelUrl() ?>/index.php" class="menu-item <?php echo isActive('index.php') ? 'active' : ''; ?>">
+            <a href="<?= $router->getPanelUrl() ?>/index.php"
+                class="menu-item <?php echo isActive('index.php') ? 'active' : ''; ?>">
                 <i class="bi bi-house-door"></i>
                 <span data-i18n="dashboard">Panel</span>
             </a>
@@ -43,7 +45,8 @@ function isActive($url, $exact = true) {
                     <i class="bi bi-person-gear"></i>
                     <span data-i18n="userRoles">Kullanıcı Rolleri</span>
                 </a>
-                <a href="#" class="submenu-item <?php echo isActive('users.php?action=permissions') ? 'active' : ''; ?>">
+                <a href="#"
+                    class="submenu-item <?php echo isActive('users.php?action=permissions') ? 'active' : ''; ?>">
                     <i class="bi bi-shield-lock"></i>
                     <span data-i18n="permissions">İzinler</span>
                 </a>
@@ -56,15 +59,18 @@ function isActive($url, $exact = true) {
                     <i class="bi bi-chevron-down arrow"></i>
                 </a>
                 <div class="submenu">
-                    <a href="<?= $router->getPanelUrl() ?>/docs/docs.html" target="_blank" class="submenu-item <?php echo isActive('docs/docs.html', false) ? 'active' : ''; ?>">
+                    <a href="<?= $router->getPanelUrl() ?>/docs/docs.html" target="_blank"
+                        class="submenu-item <?php echo isActive('docs/docs.html', false) ? 'active' : ''; ?>">
                         <i class="bi bi-file-earmark-code"></i>
                         <span data-i18n="documents">Dökümanlar</span>
                     </a>
-                    <a href="<?= $router->getPanelUrl() ?>/docs/vt.html" target="_blank" class="submenu-item <?php echo isActive('docs/vt.html', false) ? 'active' : ''; ?>">
+                    <a href="<?= $router->getPanelUrl() ?>/docs/vt.html" target="_blank"
+                        class="submenu-item <?php echo isActive('docs/vt.html', false) ? 'active' : ''; ?>">
                         <i class="bi bi-database"></i>
                         <span data-i18n="databaseDocs">Veritabanı Dokümanları</span>
                     </a>
-                    <a href="https://icons.getbootstrap.com/" target="_blank" class="submenu-item <?php echo isActive('icons.html', false) ? 'active' : ''; ?>">
+                    <a href="https://icons.getbootstrap.com/" target="_blank"
+                        class="submenu-item <?php echo isActive('icons.html', false) ? 'active' : ''; ?>">
                         <i class="bi bi-journal-text"></i>
                         <span data-i18n="icons">İkonlar</span>
                     </a>
@@ -91,24 +97,31 @@ function isActive($url, $exact = true) {
                 </a>
             </div>
 
-            <a href="<?=$router->controllers('logoutController')?>" class="menu-item <?php echo isActive('logout.php') ? 'active' : ''; ?>">
+            <a href="<?= $router->controllers('logoutController') ?>"
+                class="menu-item <?php echo isActive('logout.php') ? 'active' : ''; ?>">
                 <i class="bi bi-box-arrow-right"></i>
                 <span data-i18n="logout">Çıkış</span>
             </a>
         </div>
         <!-- Destek Alanı -->
-        <div class="sidebar-support">
-            <div class="support-header">
-                <i class="bi bi-headset"></i>
-                <span data-i18n="support">Destek</span>
+        <?php
+        if ($GLOBALS['app_config']['livechat']) {
+
+
+            ?>
+            <div class="sidebar-support">
+                <div class="support-header">
+                    <i class="bi bi-headset"></i>
+                    <span data-i18n="support">Destek</span>
+                </div>
+                <div class="support-content">
+                    <p data-i18n="needHelp">Yardıma mı ihtiyacınız var?</p>
+                    <a href="#" class="support-button <?php echo isActive('support.php?type=live') ? 'active' : ''; ?>">
+                        <i class="bi bi-chat-dots"></i>
+                        <span data-i18n="liveSupport">Canlı Destek</span>
+                    </a>
+                </div>
             </div>
-            <div class="support-content">
-                <p data-i18n="needHelp">Yardıma mı ihtiyacınız var?</p>
-                <a href="#" class="support-button <?php echo isActive('support.php?type=live') ? 'active' : ''; ?>">
-                    <i class="bi bi-chat-dots"></i>
-                    <span data-i18n="liveSupport">Canlı Destek</span>
-                </a>
-            </div>
-        </div>
+        <?php } ?>
     </div>
 </nav>

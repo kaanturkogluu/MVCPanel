@@ -29,7 +29,9 @@ $GLOBALS['site_config'] = [
 $GLOBALS['app_config'] = [
     'debug' => true, //Geliştirici Modu 
     'timezone' => 'Europe/Istanbul',
-    'session_lifetime' => 120
+    'session_lifetime' => 120,
+    'websocket_port' => 8080, // WebSocket sunucusu için port numarası
+    'livechat'=> false // chat aktif olacak mı ?
 ];
 
 

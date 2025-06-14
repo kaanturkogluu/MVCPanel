@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veritaban&#305; Dok&uuml;mantasyonu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css" rel="stylesheet">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 56px;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            position: fixed;
+            top: 56px;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 20px 0;
+            width: 280px;
+            background-color: #fff;
+            border-right: 1px solid #dee2e6;
+            overflow-y: auto;
+            overflow-x: hidden;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+        }
+        .sidebar-sticky {
+            position: relative;
+            top: 0;
+            height: calc(100vh - 56px);
+            padding-top: .5rem;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            min-height: calc(100vh - 56px);
+            max-width: calc(100% - 280px);
+            overflow-x: hidden;
+            background-color: #fff;
+        }
+        .nav-link {
+            color: #495057;
+            padding: 8px 16px;
+            border-radius: 4px;
+            margin: 2px 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #007bff;
+            background-color: #e9ecef;
+            transform: translateX(5px);
+        }
+        .nav-link.active {
+            color: #007bff;
+            background-color: #e9ecef;
+            font-weight: 500;
+        }
+        section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        h1 {
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+            color: #2c3e50;
+        }
+        h2 {
+            margin: 25px 0 15px;
+            color: #2c3e50;
+        }
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #2c3e50 !important;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 15px 20px;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+            background: none;
+            border: none;
+        }
+        .code-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .code-block-language {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        .code-block-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .code-block-actions button {
+            padding: 2px 8px;
+            font-size: 0.875rem;
+        }
+        .table-docs {
+            width: 100%;
+            margin-bottom: 1rem;
+            background-color: transparent;
+            border-collapse: collapse;
+        }
+        .table-docs th,
+        .table-docs td {
+            padding: 0.75rem;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+        }
+        .table-docs thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #dee2e6;
+            background-color: #f8f9fa;
+        }
+        .table-docs tbody tr:hover {
+            background-color: rgba(0,0,0,.075);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark fixed-top">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">Veritaban&#305; Dok&uuml;mantasyonu</span>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#giris">Giri&#351;</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#tablolar">Tablolar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#ac_users">ac_users</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#ac_settings">ac_settings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#ac_logs">ac_logs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#ac_permissions">ac_permissions</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#ac_roles">ac_roles</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#ac_user_roles">ac_user_roles</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <main class="main-content">
+                <section id="giris">
+                    <h1>Veritaban&#305; Dok&uuml;mantasyonu</h1>
+                    <div class="content">
+                        <p>Bu dok&uuml;mantasyon, panel sisteminin veritaban&#305; yap&#305;s&#305;n&#305; ve tablolar&#305;n&#305; detayl&#305; bir &#351;ekilde a&ccedil;&#305;klamaktad&#305;r. Sistem, MySQL veritaban&#305; kullanmaktad&#305;r ve a&#351;a&#287;&#305;daki tablolardan olu&#351;maktad&#305;r:</p>
+                        <ul>
+                            <li><strong>ac_users:</strong> Kullan&#305;c&#305; bilgileri ve kimlik do&#287;rulama</li>
+                            <li><strong>ac_settings:</strong> Sistem ayarlar&#305;</li>
+                            <li><strong>ac_logs:</strong> Sistem loglar&#305;</li>
+                            <li><strong>ac_permissions:</strong> &#304;zin tan&#305;mlamalar&#305;</li>
+                            <li><strong>ac_roles:</strong> Rol tan&#305;mlamalar&#305;</li>
+                            <li><strong>ac_user_roles:</strong> Kullan&#305;c&#305;-rol ili&#351;kileri</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="tablolar">
+                    <h1>Tablolar</h1>
+                    <div class="content">
+                        <p>Sistemde bulunan t&uuml;m tablolar ve k&#305;sa a&ccedil;&#305;klamalar&#305;:</p>
+                        <table class="table table-docs">
+                            <thead>
+                                <tr>
+                                    <th>Tablo Ad&#305;</th>
+                                    <th>A&ccedil;&#305;klama</th>
+                                    <th>&#304;li&#351;kili Tablolar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ac_users</td>
+                                    <td>Kullan&#305;c&#305; hesaplar&#305; ve kimlik bilgileri</td>
+                                    <td>ac_user_roles, ac_logs</td>
+                                </tr>
+                                <tr>
+                                    <td>ac_settings</td>
+                                    <td>Sistem genel ayarlar&#305;</td>
+                                    <td>-</td>
+                                </tr>
+                                <tr>
+                                    <td>ac_logs</td>
+                                    <td>Sistem aktivite kay&#305;tlar&#305;</td>
+                                    <td>ac_users</td>
+                                </tr>
+                                <tr>
+                                    <td>ac_permissions</td>
+                                    <td>&#304;zin tan&#305;mlamalar&#305;</td>
+                                    <td>ac_roles</td>
+                                </tr>
+                                <tr>
+                                    <td>ac_roles</td>
+                                    <td>Rol tan&#305;mlamalar&#305;</td>
+                                    <td>ac_permissions, ac_user_roles</td>
+                                </tr>
+                                <tr>
+                                    <td>ac_user_roles</td>
+                                    <td>Kullan&#305;c&#305;-rol e&#351;le&#351;tirmeleri</td>
+                                    <td>ac_users, ac_roles</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="ac_users">
+                    <h1>ac_users Tablosu</h1>
+                    <div class="content">
+                        <p>Kullan&#305;c&#305; hesaplar&#305;n&#305;n tutuldu&#287;u ana tablo. Kullan&#305;c&#305; kimlik bilgileri, profil bilgileri ve hesap durumu burada saklan&#305;r.</p>
+                        <div class="code-block">
+                            <div class="code-block-header">
+                                <span class="code-block-language">SQL</span>
+                            </div>
+                            <div class="code-preview">
+                                <pre><code class="language-sql">CREATE TABLE `ac_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `full_name` varchar(100) DEFAULT NULL,
+  `user_token` varchar(255) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT 1,
+  `last_login` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;</code></pre>
+                            </div>
+                        </div>
+                        <h2>Alan A&ccedil;&#305;klamalar&#305;</h2>
+                        <table class="table table-docs">
+                            <thead>
+                                <tr>
+                                    <th>Alan</th>
+                                    <th>Tip</th>
+                                    <th>A&ccedil;&#305;klama</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>int(11)</td>
+                                    <td>Otomatik artan benzersiz kimlik</td>
+                                </tr>
+                                <tr>
+                                    <td>username</td>
+                                    <td>varchar(50)</td>
+                                    <td>Benzersiz kullan&#305;c&#305; ad&#305;</td>
+                                </tr>
+                                <tr>
+                                    <td>password</td>
+                                    <td>varchar(255)</td>
+                                    <td>&#350;ifrelenmi&#351; parola</td>
+                                </tr>
+                                <tr>
+                                    <td>email</td>
+                                    <td>varchar(100)</td>
+                                    <td>Benzersiz e-posta adresi</td>
+                                </tr>
+                                <tr>
+                                    <td>full_name</td>
+                                    <td>varchar(100)</td>
+                                    <td>Kullan&#305;c&#305;n&#305;n tam ad&#305;</td>
+                                </tr>
+                                <tr>
+                                    <td>user_token</td>
+                                    <td>varchar(255)</td>
+                                    <td>Oturum ve API token'&#305;</td>
+                                </tr>
+                                <tr>
+                                    <td>status</td>
+                                    <td>tinyint(1)</td>
+                                    <td>Hesap durumu (1: aktif, 0: pasif)</td>
+                                </tr>
+                                <tr>
+                                    <td>last_login</td>
+                                    <td>datetime</td>
+                                    <td>Son giri&#351; tarihi</td>
+                                </tr>
+                                <tr>
+                                    <td>created_at</td>
+                                    <td>datetime</td>
+                                    <td>Kay&#305;t olu&#351;turma tarihi</td>
+                                </tr>
+                                <tr>
+                                    <td>updated_at</td>
+                                    <td>datetime</td>
+                                    <td>Son g&uuml;ncelleme tarihi</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="ac_settings">
+                    <h1>ac_settings Tablosu</h1>
+                    <div class="content">
+                        <p>Sistem genel ayarlar&#305;n&#305;n tutuldu&#287;u tablo. T&uuml;m sistem ayarlar&#305; key-value yap&#305;s&#305;nda saklan&#305;r.</p>
+                        <div class="code-block">
+                            <div class="code-block-header">
+                                <span class="code-block-language">SQL</span>
+                            </div>
+                            <div class="code-preview">
+                                <pre><code class="language-sql">CREATE TABLE `ac_settings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `setting_key` varchar(50) NOT NULL,
+  `setting_value` text DEFAULT NULL,
+  `setting_group` varchar(50) DEFAULT 'general',
+  `description` varchar(255) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `setting_key` (`setting_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;</code></pre>
+                            </div>
+                        </div>
+                        <h2>Alan A&ccedil;&#305;klamalar&#305;</h2>
+                        <table class="table table-docs">
+                            <thead>
+                                <tr>
+                                    <th>Alan</th>
+                                    <th>Tip</th>
+                                    <th>A&ccedil;&#305;klama</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>int(11)</td>
+                                    <td>Otomatik artan benzersiz kimlik</td>
+                                </tr>
+                                <tr>
+                                    <td>setting_key</td>
+                                    <td>varchar(50)</td>
+                                    <td>Benzersiz ayar anahtar&#305;</td>
+                                </tr>
+                                <tr>
+                                    <td>setting_value</td>
+                                    <td>text</td>
+                                    <td>Ayar de&#287;eri</td>
+                                </tr>
+                                <tr>
+                                    <td>setting_group</td>
+                                    <td>varchar(50)</td>
+                                    <td>Ayar grubu (varsay&#305;lan: general)</td>
+                                </tr>
+                                <tr>
+                                    <td>description</td>
+                                    <td>varchar(255)</td>
+                                    <td>Ayar a&ccedil;&#305;klamas&#305;</td>
+                                </tr>
+                                <tr>
+                                    <td>created_at</td>
+                                    <td>datetime</td>
+                                    <td>Kay&#305;t olu&#351;turma tarihi</td>
+                                </tr>
+                                <tr>
+                                    <td>updated_at</td>
+                                    <td>datetime</td>
+                                    <td>Son g&uuml;ncelleme tarihi</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="ac_logs">
+                    <h1>ac_logs Tablosu</h1>
+                    <div class="content">
+                        <p>Sistem aktivite kay&#305;tlar&#305;n&#305;n tutuldu&#287;u tablo. T&uuml;m kullan&#305;c&#305; i&#351;lemleri ve sistem olaylar&#305; burada loglan&#305;r.</p>
+                        <div class="code-block">
+                            <div class="code-block-header">
+                                <span class="code-block-language">SQL</span>
+                            </div>
+                            <div class="code-preview">
+                                <pre><code class="language-sql">CREATE TABLE `ac_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `action` varchar(50) NOT NULL,
+  `description` text DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` text DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `ac_logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `ac_users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;</code></pre>
+                            </div>
+                        </div>
+                        <h2>Alan A&ccedil;&#305;klamalar&#305;</h2>
+                        <table class="table table-docs">
+                            <thead>
+                                <tr>
+                                    <th>Alan</th>
+                                    <th>Tip</th>
+                                    <th>A&ccedil;&#305;klama</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>int(11)</td>
+                                    <td>Otomatik artan benzersiz kimlik</td>
+                                </tr>
+                                <tr>
+                                    <td>user_id</td>
+                                    <td>int(11)</td>
+                                    <td>&#304;&#351;lemi yapan kullan&#305;c&#305; ID'si (ac_users tablosu ile ili&#351;kili)</td>
+                                </tr>
+                                <tr>
+                                    <td>action</td>
+                                    <td>varchar(50)</td>
+                                    <td>Yap&#305;lan i&#351;lem t&uuml;r&uuml;</td>
+                                </tr>
+                                <tr>
+                                    <td>description</td>
+                                    <td>text</td>
+                                    <td>&#304;&#351;lem a&ccedil;&#305;klamas&#305;</td>
+                                </tr>
+                                <tr>
+                                    <td>ip_address</td>
+                                    <td>varchar(45)</td>
+                                    <td>&#304;&#351;lemin yap&#305;ld&#305;&#287;&#305; IP adresi</td>
+                                </tr>
+                                <tr>
+                                    <td>user_agent</td>
+                                    <td>text</td>
+                                    <td>Kullan&#305;c&#305; taray&#305;c&#305; bilgisi</td>
+                                </tr>
+                                <tr>
+                                    <td>created_at</td>
+                                    <td>datetime</td>
+                                    <td>Log kayd&#305; olu&#351;turma tarihi</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="ac_permissions">
+                    <h1>ac_permissions Tablosu</h1>
+                    <div class="content">
+                        <p>Sistem izinlerinin tan&#305;mland&#305;&#287;&#305; tablo. Her bir izin benzersiz bir anahtar ile tan&#305;mlan&#305;r.</p>
+                        <div class="code-block">
+                            <div class="code-block-header">
+                                <span class="code-block-language">SQL</span>
+                            </div>
+                            <div class="code-preview">
+                                <pre><code class="language-sql">CREATE TABLE `ac_permissions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `permission_key` varchar(50) NOT NULL,
+  `permission_name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `permission_key` (`permission_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;</code></pre>
+                            </div>
+                        </div>
+                        <h2>Alan A&ccedil;&#305;klamalar&#305;</h2>
+                        <table class="table table-docs">
+                            <thead>
+                                <tr>
+                                    <th>Alan</th>
+                                    <th>Tip</th>
+                                    <th>A&ccedil;&#305;klama</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>int(11)</td>
+                                    <td>Otomatik artan benzersiz kimlik</td>
+                                </tr>
+                                <tr>
+                                    <td>permission_key</td>
+                                    <td>varchar(50)</td>
+                                    <td>Benzersiz izin anahtar&#305;</td>
+                                </tr>
+                                <tr>
+                                    <td>permission_name</td>
+                                    <td>varchar(100)</td>
+                                    <td>&#304;zin ad&#305;</td>
+                                </tr>
+                                <tr>
+                                    <td>description</td>
+                                    <td>text</td>
+                                    <td>&#304;zin a&ccedil;&#305;klamas&#305;</td>
+                                </tr>
+                                <tr>
+                                    <td>created_at</td>
+                                    <td>datetime</td>
+                                    <td>Kay&#305;t olu&#351;turma tarihi</td>
+                                </tr>
+                                <tr>
+                                    <td>updated_at</td>
+                                    <td>datetime</td>
+                                    <td>Son g&uuml;ncelleme tarihi</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="ac_roles">
+                    <h1>ac_roles Tablosu</h1>
+                    <div class="content">
+                        <p>Kullan&#305;c&#305; rollerinin tan&#305;mland&#305;&#287;&#305; tablo. Her rol bir dizi izne sahip olabilir.</p>
+                        <div class="code-block">
+                            <div class="code-block-header">
+                                <span class="code-block-language">SQL</span>
+                            </div>
+                            <div class="code-preview">
+                                <pre><code class="language-sql">CREATE TABLE `ac_roles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `role_name` varchar(50) NOT NULL,
+  `description` text DEFAULT NULL,
+  `is_system` tinyint(1) DEFAULT 0,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `role_name` (`role_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;</code></pre>
+                            </div>
+                        </div>
+                        <h2>Alan A&ccedil;&#305;klamalar&#305;</h2>
+                        <table class="table table-docs">
+                            <thead>
+                                <tr>
+                                    <th>Alan</th>
+                                    <th>Tip</th>
+                                    <th>A&ccedil;&#305;klama</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>int(11)</td>
+                                    <td>Otomatik artan benzersiz kimlik</td>
+                                </tr>
+                                <tr>
+                                    <td>role_name</td>
+                                    <td>varchar(50)</td>
+                                    <td>Benzersiz rol ad&#305;</td>
+                                </tr>
+                                <tr>
+                                    <td>description</td>
+                                    <td>text</td>
+                                    <td>Rol a&ccedil;&#305;klamas&#305;</td>
+                                </tr>
+                                <tr>
+                                    <td>is_system</td>
+                                    <td>tinyint(1)</td>
+                                    <td>Sistem rol&uuml; m&uuml;? (1: evet, 0: hay&#305;r)</td>
+                                </tr>
+                                <tr>
+                                    <td>created_at</td>
+                                    <td>datetime</td>
+                                    <td>Kay&#305;t olu&#351;turma tarihi</td>
+                                </tr>
+                                <tr>
+                                    <td>updated_at</td>
+                                    <td>datetime</td>
+                                    <td>Son g&uuml;ncelleme tarihi</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="ac_user_roles">
+                    <h1>ac_user_roles Tablosu</h1>
+                    <div class="content">
+                        <p>Kullan&#305;c&#305;lar&#305;n rollerle e&#351;le&#351;tirildi&#287;i ara tablo. Bir kullan&#305;c&#305; birden fazla role sahip olabilir.</p>
+                        <div class="code-block">
+                            <div class="code-block-header">
+                                <span class="code-block-language">SQL</span>
+                            </div>
+                            <div class="code-preview">
+                                <pre><code class="language-sql">CREATE TABLE `ac_user_roles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `role_id` int(11) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_role` (`user_id`,`role_id`),
+  KEY `role_id` (`role_id`),
+  CONSTRAINT `ac_user_roles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `ac_users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `ac_user_roles_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `ac_roles` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;</code></pre>
+                            </div>
+                        </div>
+                        <h2>Alan A&ccedil;&#305;klamalar&#305;</h2>
+                        <table class="table table-docs">
+                            <thead>
+                                <tr>
+                                    <th>Alan</th>
+                                    <th>Tip</th>
+                                    <th>A&ccedil;&#305;klama</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>int(11)</td>
+                                    <td>Otomatik artan benzersiz kimlik</td>
+                                </tr>
+                                <tr>
+                                    <td>user_id</td>
+                                    <td>int(11)</td>
+                                    <td>Kullan&#305;c&#305; ID'si (ac_users tablosu ile ili&#351;kili)</td>
+                                </tr>
+                                <tr>
+                                    <td>role_id</td>
+                                    <td>int(11)</td>
+                                    <td>Rol ID'si (ac_roles tablosu ile ili&#351;kili)</td>
+                                </tr>
+                                <tr>
+                                    <td>created_at</td>
+                                    <td>datetime</td>
+                                    <td>Kay&#305;t olu&#351;turma tarihi</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Edit Buttons Container -->
+    <div class="edit-buttons" style="position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px;">
+        <!-- Add New Section Button -->
+        <button class="edit-button" onclick="toggleAddSectionForm()" style="width: 50px; height: 50px; border-radius: 50%; background-color: #28a745; color: white; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;">+</button>
+        <!-- Edit Button -->
+        <button class="edit-button" onclick="toggleEditForm()" style="width: 50px; height: 50px; border-radius: 50%; background-color: #007bff; color: white; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;">&#9998;</button>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="edit-form" id="editForm" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.2); z-index: 1000; width: 80%; max-width: 800px; max-height: 90vh; overflow-y: auto;">
+        <span class="close-btn" onclick="toggleEditForm()" style="position: absolute; right: 10px; top: 10px; cursor: pointer; font-size: 24px;">&times;</span>
+        <h4>Dok&uuml;mantasyon D&uuml;zenle</h4>
+        <form id="docEditForm" onsubmit="saveDocumentation(event)">
+            <div class="form-group mb-3">
+                <label for="editSection">B&ouml;l&uuml;m:</label>
+                <select class="form-control" id="editSection" name="section" required onchange="loadSectionContent()">
+                    <!-- Se&ccedil;enekler JavaScript ile doldurulacak -->
+                </select>
+            </div>
+            <div class="form-group mb-3">
+                <label for="editTitle">Ba&#351;l&#305;k:</label>
+                <input type="text" class="form-control" id="editTitle" name="title" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="editContent">&#304;&ccedil;erik:</label>
+                <div id="editContentEditor"></div>
+            </div>
+            <div class="form-group mb-3">
+                <label for="editSidebarTitle">Sidebar Ba&#351;l&#305;k:</label>
+                <input type="text" class="form-control" id="editSidebarTitle" name="sidebar_title" required>
+            </div>
+            <!-- Kod Bloklar&#305; B&ouml;l&uuml;m&uuml; -->
+            <div class="form-group mb-3">
+                <label class="form-label">Kod Ekle</label>
+                <div class="code-type-selector">
+                    <select class="form-select" id="editCodeLanguage">
+                        <option value="sql">SQL</option>
+                        <option value="php">PHP</option>
+                        <option value="javascript">JavaScript</option>
+                    </select>
+                </div>
+                <textarea id="editCodeEditor"></textarea>
+                <div class="mt-2">
+                    <button type="button" class="btn btn-secondary" onclick="addEditCodeBlock()">Kodu Ekle</button>
+                </div>
+            </div>
+            <div id="editCodeBlocks" class="mb-3">
+                <!-- Eklenen kod bloklar&#305; buraya gelecek -->
+            </div>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+        </form>
+    </div>
+
+    <!-- Add New Section Form -->
+    <div class="edit-form" id="addSectionForm" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.2); z-index: 1000; width: 80%; max-width: 800px; max-height: 90vh; overflow-y: auto;">
+        <span class="close-btn" onclick="toggleAddSectionForm()" style="position: absolute; right: 10px; top: 10px; cursor: pointer; font-size: 24px;">&times;</span>
+        <h4>Yeni B&ouml;l&uuml;m Ekle</h4>
+        <form id="addSectionFormElement" onsubmit="addNewSection(event)">
+            <div class="form-group mb-3">
+                <label for="scrollTarget">B&ouml;l&uuml;m ID:</label>
+                <input type="text" class="form-control" id="scrollTarget" required>
+                <small class="form-text">Bu ID, hem sidebar linki hem de i&ccedil;erik b&ouml;l&uuml;m&uuml; i&ccedil;in kullan&#305;lacak</small>
+            </div>
+            <div class="form-group mb-3">
+                <label for="sidebarTitle">Sidebar Ba&#351;l&#305;k:</label>
+                <input type="text" class="form-control" id="sidebarTitle" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="topic">Konu Ba&#351;l&#305;k:</label>
+                <input type="text" class="form-control" id="topic" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="content">&#304;&ccedil;erik:</label>
+                <div id="content"></div>
+            </div>
+            <!-- Kod Ekleme B&ouml;l&uuml;m&uuml; -->
+            <div class="form-group mb-3">
+                <label class="form-label">Kod Ekle</label>
+                <div class="code-type-selector">
+                    <select class="form-select" id="codeLanguage">
+                        <option value="sql">SQL</option>
+                        <option value="php">PHP</option>
+                        <option value="javascript">JavaScript</option>
+                    </select>
+                </div>
+                <textarea id="codeEditor"></textarea>
+                <div class="mt-2">
+                    <button type="button" class="btn btn-secondary" onclick="addCodeBlock()">Kodu Ekle</button>
+                </div>
+            </div>
+            <div id="codeBlocks" class="mb-3">
+                <!-- Eklenen kod bloklar&#305; buraya gelecek -->
+            </div>
+            <button type="submit" class="btn btn-primary">B&ouml;l&uuml;m Ekle</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/sql/sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/php/php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script>
+        let contentQuill;
+        let editContentQuill;
+        let editCodeMirror;
+        let codeEditor;
+
+        // Sayfa y&uuml;klendi&#287;inde edit&ouml;rleri ba&#351;lat
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEditors();
+            populateSectionOptions();
+            initializeMutationObserver();
+        });
+
+        function initializeMutationObserver() {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList') {
+                        mutation.addedNodes.forEach((node) => {
+                            if (node.nodeType === 1) {
+                                const codeElements = node.querySelectorAll('code');
+                                codeElements.forEach(code => {
+                                    hljs.highlightElement(code);
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+            const mainContent = document.querySelector('.main-content');
+            const editForm = document.getElementById('editForm');
+            if (mainContent) {
+                observer.observe(mainContent, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+        }
+
+        function initializeEditors() {
+            // Quill edit&ouml;rlerini ba&#351;lat
+            contentQuill = new Quill('#content', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote', 'code-block'],
+                        [{ 'header': 1 }, { 'header': 2 }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'script': 'sub'}, { 'script': 'super' }],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        [{ 'direction': 'rtl' }],
+                        [{ 'size': ['small', false, 'large', 'huge'] }],
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'font': [] }],
+                        [{ 'align': [] }],
+                        ['clean']
+                    ]
+                }
+            });
+
+            editContentQuill = new Quill('#editContentEditor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote', 'code-block'],
+                        [{ 'header': 1 }, { 'header': 2 }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'script': 'sub'}, { 'script': 'super' }],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        [{ 'direction': 'rtl' }],
+                        [{ 'size': ['small', false, 'large', 'huge'] }],
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'font': [] }],
+                        [{ 'align': [] }],
+                        ['clean']
+                    ]
+                }
+            });
+
+            // CodeMirror edit&ouml;rlerini ba&#351;lat
+            editCodeMirror = CodeMirror.fromTextArea(document.getElementById("editCodeEditor"), {
+                mode: "sql",
+                lineNumbers: true,
+                theme: "monokai",
+                height: "200px",
+                lineWrapping: true,
+                matchBrackets: true,
+                autoCloseBrackets: true,
+                indentUnit: 4,
+                tabSize: 4
+            });
+
+            codeEditor = CodeMirror.fromTextArea(document.getElementById("codeEditor"), {
+                mode: "sql",
+                lineNumbers: true,
+                theme: "monokai",
+                height: "200px",
+                lineWrapping: true,
+                matchBrackets: true,
+                autoCloseBrackets: true,
+                indentUnit: 4,
+                tabSize: 4
+            });
+
+            // Dil se&ccedil;icileri i&ccedil;in event listener'lar
+            document.getElementById('editCodeLanguage').addEventListener('change', function() {
+                editCodeMirror.setOption("mode", this.value);
+            });
+
+            document.getElementById('codeLanguage').addEventListener('change', function() {
+                codeEditor.setOption("mode", this.value);
+            });
+        }
+
+        function populateSectionOptions() {
+            const select = document.getElementById("editSection");
+            const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
+            select.innerHTML = '';
+            sidebarLinks.forEach(link => {
+                const sectionId = link.getAttribute('href').substring(1);
+                const option = document.createElement('option');
+                option.value = sectionId;
+                option.textContent = link.textContent;
+                select.appendChild(option);
+            });
+            if (select.options.length > 0) {
+                select.selectedIndex = 0;
+                loadSectionContent();
+            }
+        }
+
+        function loadSectionContent() {
+            const sectionId = document.getElementById("editSection").value;
+            if (!sectionId) return;
+            const section = document.getElementById(sectionId);
+            if (!section) return;
+            const title = section.querySelector("h1")?.textContent || "";
+            const contentElement = section.querySelector(".content div");
+            let content = contentElement ? contentElement.innerHTML : "";
+            const contentDiv = document.createElement('div');
+            contentDiv.innerHTML = content;
+            const existingTitle = contentDiv.querySelector('h1');
+            if (existingTitle) {
+                existingTitle.remove();
+                content = contentDiv.innerHTML;
+            }
+            const sidebarLink = document.querySelector(`a[href="#${sectionId}"]`);
+            const sidebarTitle = sidebarLink ? sidebarLink.textContent : "";
+            document.getElementById("editTitle").value = title;
+            editContentQuill.root.innerHTML = content;
+            document.getElementById("editSidebarTitle").value = sidebarTitle;
+            const codeBlocksContainer = document.getElementById("editCodeBlocks");
+            codeBlocksContainer.innerHTML = "";
+            const existingCodeBlocks = section.querySelectorAll(".code-block");
+            existingCodeBlocks.forEach(block => {
+                const lang = block.querySelector('.code-block-language')?.textContent.toLowerCase() || "sql";
+                const code = block.querySelector('code')?.textContent || "";
+                const newBlock = createCodeBlock(lang, code);
+                codeBlocksContainer.appendChild(newBlock);
+            });
+        }
+
+        function createCodeBlock(lang, code) {
+            const div = document.createElement('div');
+            div.className = 'code-block';
+            div.innerHTML = `
+                <div class="code-block-header">
+                    <span class="code-block-language">${lang.toUpperCase()}
+                    <div class="code-block-actions">
+                        <button type="button" class="btn btn-sm btn-primary me-2" onclick="editCodeBlock(this)">D&uuml;zenle
+                        <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.code-block').remove()">Sil
+                    
+                
+                <div class="code-preview">
+                    <pre><code class="language-${lang}">${code}
+                
+            `;
+            return div;
+        }
+
+        function addCodeBlock() {
+            const lang = document.getElementById('codeLanguage').value;
+            const code = codeEditor.getValue();
+            if (!code.trim()) return;
+            const codeBlocksContainer = document.getElementById("codeBlocks");
+            const newBlock = createCodeBlock(lang, code);
+            codeBlocksContainer.appendChild(newBlock);
+            codeEditor.setValue('');
+            hljs.highlightElement(newBlock.querySelector('code'));
+        }
+
+        function addEditCodeBlock() {
+            const lang = document.getElementById('editCodeLanguage').value;
+            const code = editCodeMirror.getValue();
+            if (!code.trim()) return;
+            const codeBlocksContainer = document.getElementById("editCodeBlocks");
+            const newBlock = createCodeBlock(lang, code);
+            codeBlocksContainer.appendChild(newBlock);
+            editCodeMirror.setValue('');
+            hljs.highlightElement(newBlock.querySelector('code'));
+        }
+
+        function editCodeBlock(button) {
+            const codeBlock = button.closest('.code-block');
+            const lang = codeBlock.querySelector('.code-block-language')?.textContent.toLowerCase() || "sql";
+            const code = codeBlock.querySelector('code')?.textContent || "";
+            document.getElementById('editCodeLanguage').value = lang;
+            editCodeMirror.setValue(code);
+            codeBlock.style.display = 'none';
+            const addButton = document.querySelector('button[onclick="addEditCodeBlock()"]');
+            addButton.textContent = 'G&uuml;ncelle';
+            addButton.onclick = function() {
+                updateCodeBlock(codeBlock);
+            };
+        }
+
+        function updateCodeBlock(oldBlock) {
+            const lang = document.getElementById('editCodeLanguage').value;
+            const code = editCodeMirror.getValue();
+            if (!code.trim()) return;
+            oldBlock.querySelector('.code-block-language').textContent = lang.toUpperCase();
+            oldBlock.querySelector('code').textContent = code;
+            oldBlock.querySelector('code').className = `language-${lang}`;
+            oldBlock.style.display = 'block';
+            hljs.highlightElement(oldBlock.querySelector('code'));
+            editCodeMirror.setValue('');
+            const addButton = document.querySelector('button[onclick="updateCodeBlock()"]');
+            addButton.textContent = 'Kod Ekle';
+            addButton.onclick = function() {
+                addEditCodeBlock();
+            };
+        }
+
+        function toggleEditForm() {
+            const form = document.getElementById("editForm");
+            if (form.style.display === "none") {
+                form.style.display = "block";
+                populateSectionOptions();
+                initializeEditors();
+                loadSectionContent();
+            } else {
+                form.style.display = "none";
+                if (editContentQuill) {
+                    editContentQuill.root.innerHTML = "";
+                }
+                if (editCodeMirror) {
+                    editCodeMirror.setValue("");
+                }
+                document.getElementById("editCodeBlocks").innerHTML = "";
+            }
+        }
+
+        function toggleAddSectionForm() {
+            const form = document.getElementById("addSectionForm");
+            if (form.style.display === "none") {
+                form.style.display = "block";
+                initializeEditors();
+            } else {
+                form.style.display = "none";
+                if (contentQuill) {
+                    contentQuill.root.innerHTML = "";
+                }
+                if (codeEditor) {
+                    codeEditor.setValue("");
+                }
+                document.getElementById("codeBlocks").innerHTML = "";
+            }
+        }
+
+        function saveDocumentation(event) {
+            event.preventDefault();
+            const sectionId = document.getElementById("editSection").value;
+            const title = document.getElementById("editTitle").value.trim();
+            const content = editContentQuill.root.innerHTML;
+            const sidebarTitle = document.getElementById("editSidebarTitle").value.trim();
+            const codeBlocks = document.getElementById("editCodeBlocks").innerHTML;
+
+            if (!sectionId || !title || !content || !sidebarTitle) {
+                alert("L&uuml;tfen t&uuml;m alanlar&#305; doldurun.");
+                return;
+            }
+
+            const contentDiv = document.createElement('div');
+            contentDiv.innerHTML = content;
+            const existingTitle = contentDiv.querySelector('h1');
+            if (existingTitle) {
+                existingTitle.remove();
+            }
+
+            const fullContent = `
+                <h1>${title}
+                <div class="content">
+                    <div>${contentDiv.innerHTML}
+                    ${codeBlocks}
+                
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSection('${sectionId}')">B&ouml;l&uuml;m&uuml; Sil
+                
+            `;
+
+            fetch('save_docs.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    section: sectionId,
+                    content: fullContent,
+                    sidebar_title: sidebarTitle
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert("Hata: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Bir hata olu&#351;tu!");
+            });
+        }
+
+        function addNewSection(event) {
+            event.preventDefault();
+            const target = document.getElementById("scrollTarget").value.trim();
+            const sidebarTitle = document.getElementById("sidebarTitle").value.trim();
+            const topic = document.getElementById("topic").value.trim();
+            const content = contentQuill.root.innerHTML;
+            const codeBlocks = document.getElementById("codeBlocks").innerHTML;
+
+            if (!target || !sidebarTitle || !topic || !content) {
+                alert("T&uuml;m alanlar doldurulmal&#305;d&#305;r.");
+                return;
+            }
+
+            const fullContent = `
+                <h1>${topic}
+                <div class="content">
+                    <div>${content}
+                    ${codeBlocks}
+                
+                <div class="section-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSection('${target}')">B&ouml;l&uuml;m&uuml; Sil
+                
+            `;
+
+            fetch('save_docs.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    section: target,
+                    content: fullContent,
+                    sidebar_title: sidebarTitle
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert("Hata: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Bir hata olu&#351;tu!");
+            });
+        }
+
+        function deleteSection(sectionId) {
+            if (confirm('Bu b&ouml;l&uuml;m&uuml; silmek istedi&#287;inizden emin misiniz?')) {
+                fetch('save_docs.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'delete',
+                        section: sectionId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert("Hata: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("Bir hata olu&#351;tu!");
+                });
+            }
+        }
+
+        // Syntax highlighting
+        document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightElement(block);
+        });
+
+        // Active link handling
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                navLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Scroll spy
+        const sections = document.querySelectorAll('section');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 60) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

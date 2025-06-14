@@ -95,7 +95,7 @@ require_once __DIR__."/../includes/navbar.php";
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <img src="https://via.placeholder.com/32" class="rounded-circle me-2"
+                                        <img width="32px" height="32px" src="https://www.shareicon.net/data/512x512/2016/08/05/806962_user_512x512.png" class="rounded-circle me-2"
                                             alt="User">
                                         <div>Ayşe Demir</div>
                                     </div>
@@ -111,7 +111,7 @@ require_once __DIR__."/../includes/navbar.php";
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <img src="https://via.placeholder.com/32" class="rounded-circle me-2"
+                                        <img width="32px" height="32px" src="https://www.shareicon.net/data/512x512/2016/08/05/806962_user_512x512.png" class="rounded-circle me-2"
                                             alt="User">
                                         <div>Mehmet Kaya</div>
                                     </div>
